@@ -34,6 +34,10 @@ const noteSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Label'
   }],
+  collaborators: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -44,5 +48,8 @@ const noteSchema = new mongoose.Schema({
 });
 
 noteSchema.index({ userId: 1, isTrashed: 1 });
+noteSchema.index({ title: 'text' });
+noteSchema.index({ labels: 1 });
+noteSchema.index({ collaborators: 1 });
 
 module.exports = mongoose.model('Note', noteSchema);

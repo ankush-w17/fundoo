@@ -2,5 +2,6 @@ module.exports = {
   testEnvironment: 'node',
   coveragePathIgnorePatterns: ['/node_modules/'],
   testMatch: ['**/tests/**/*.test.js'],
-  verbose: true
+  verbose: true,
+  preset: '@shelf/jest-mongodb'
 };

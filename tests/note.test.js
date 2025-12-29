@@ -9,7 +9,7 @@ describe('Note API Tests', () => {
   let userId;
 
   beforeAll(async () => {
-    await mongoose.connect('mongodb://localhost:27017/fundoonotes_test');
+    await mongoose.connect(process.env.MONGO_URL);
   });
 
   afterAll(async () => {

@@ -5,7 +5,7 @@ const User = require('../src/models/user.model');
 
 describe('User API Tests', () => {
   beforeAll(async () => {
-    await mongoose.connect('mongodb://localhost:27017/fundoonotes_test');
+    await mongoose.connect(process.env.MONGO_URL);
   });
 
   afterAll(async () => {

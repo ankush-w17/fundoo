@@ -163,6 +163,140 @@ class NoteController {
       });
     }
   }
+
+  async getArchivedNotes(req, res) {
+    try {
+      const notes = await noteService.getArchivedNotes(req.user._id);
+      res.status(200).json({
+        success: true,
+        count: notes.length,
+        data: notes
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async getPinnedNotes(req, res) {
+    try {
+      const notes = await noteService.getPinnedNotes(req.user._id);
+      res.status(200).json({
+        success: true,
+        count: notes.length,
+        data: notes
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async getNotesByLabel(req, res) {
+    try {
+      const notes = await noteService.getNotesByLabel(req.user._id, req.params.labelId);
+      res.status(200).json({
+        success: true,
+        count: notes.length,
+        data: notes
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async searchNotes(req, res) {
+    try {
+      const { q } = req.query;
+      if (!q) {
+        return res.status(400).json({
+          success: false,
+          message: 'Search query is required'
+        });
+      }
+      const notes = await noteService.searchNotes(req.user._id, q);
+      res.status(200).json({
+        success: true,
+        count: notes.length,
+        data: notes
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async addCollaborator(req, res) {
+    try {
+      const { email } = req.body;
+      const emailService = require('../services/email.service');
+      
+      const result = await noteService.addCollaborator(req.params.id, req.user._id, email);
+      
+      await emailService.sendCollaboratorInvitation(
+        email,
+        req.user,
+        result.note.title,
+        result.note._id
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Collaborator added and invitation sent',
+        data: result.note
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async removeCollaborator(req, res) {
+    try {
+      const note = await noteService.removeCollaborator(
+        req.params.id,
+        req.user._id,
+        req.params.collaboratorId
+      );
+      res.status(200).json({
+        success: true,
+        message: 'Collaborator removed',
+        data: note
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async getSharedNotes(req, res) {
+    try {
+      const notes = await noteService.getSharedNotes(req.user._id);
+      res.status(200).json({
+        success: true,
+        count: notes.length,
+        data: notes
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
 }
 
 module.exports = new NoteController();
