@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/ankush-w17/fundoo#readme",
   "dependencies": {
+    "amqplib": "^0.10.9",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

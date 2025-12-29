@@ -238,20 +238,22 @@ class NoteController {
   async addCollaborator(req, res) {
     try {
       const { email } = req.body;
-      const emailService = require('../services/email.service');
+      const rabbitmqService = require('../services/rabbitmq.service');
+      const rabbitmqConfig = require('../config/rabbitmq.config');
       
       const result = await noteService.addCollaborator(req.params.id, req.user._id, email);
       
-      await emailService.sendCollaboratorInvitation(
-        email,
-        req.user,
-        result.note.title,
-        result.note._id
-      );
+      // Push email task to RabbitMQ for async processing
+      await rabbitmqService.sendToQueue(rabbitmqConfig.queues.email, {
+        toEmail: email,
+        fromUser: req.user,
+        noteTitle: result.note.title,
+        noteId: result.note._id
+      });
 
       res.status(200).json({
         success: true,
-        message: 'Collaborator added and invitation sent',
+        message: 'Collaborator added successfully (invitation will be sent shortly)',
         data: result.note
       });
     } catch (error) {
