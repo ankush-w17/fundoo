@@ -1,5 +1,5 @@
 const Note = require('../models/note.model');
-const cacheService = require('./cache.service');
+// const cacheService = require('./cache.service');
 
 class NoteService {
   async createNote(noteData, userId) {
@@ -8,18 +8,18 @@ class NoteService {
       userId
     });
 
-    await cacheService.deletePattern(`notes:${userId}*`);
+    // await cacheService.deletePattern(`notes:${userId}*`);
 
     return await note.populate('labels');
   }
 
   async getNotes(userId, filters = {}) {
-    const cacheKey = cacheService.generateKey('notes', userId, JSON.stringify(filters));
-    
-    const cachedNotes = await cacheService.get(cacheKey);
-    if (cachedNotes) {
-      return cachedNotes;
-    }
+    // const cacheKey = cacheService.generateKey('notes', userId, JSON.stringify(filters));
+    // 
+    // const cachedNotes = await cacheService.get(cacheKey);
+    // if (cachedNotes) {
+    //   return cachedNotes;
+    // }
 
     const query = { userId, isTrashed: false };
 
@@ -36,7 +36,7 @@ class NoteService {
       .sort({ isPinned: -1, updatedAt: -1 })
       .limit(20);
 
-    await cacheService.set(cacheKey, notes);
+    // await cacheService.set(cacheKey, notes);
 
     return notes;
   }
@@ -61,7 +61,7 @@ class NoteService {
     Object.assign(note, updateData);
     await note.save();
 
-    await cacheService.deletePattern(`notes:${userId}*`);
+    // await cacheService.deletePattern(`notes:${userId}*`);
 
     return await note.populate('labels');
   }
@@ -76,7 +76,7 @@ class NoteService {
     note.isTrashed = true;
     await note.save();
 
-    await cacheService.deletePattern(`notes:${userId}*`);
+    // await cacheService.deletePattern(`notes:${userId}*`);
 
     return { message: 'Note moved to trash' };
   }
@@ -139,55 +139,55 @@ class NoteService {
   }
 
   async getArchivedNotes(userId) {
-    const cacheKey = cacheService.generateKey('notes', userId, 'archived');
-    
-    const cachedNotes = await cacheService.get(cacheKey);
-    if (cachedNotes) {
-      return cachedNotes;
-    }
+    // const cacheKey = cacheService.generateKey('notes', userId, 'archived');
+    // 
+    // const cachedNotes = await cacheService.get(cacheKey);
+    // if (cachedNotes) {
+    //   return cachedNotes;
+    // }
 
     const notes = await Note.find({ userId, isArchived: true, isTrashed: false })
       .populate('labels')
       .sort({ updatedAt: -1 })
       .limit(20);
 
-    await cacheService.set(cacheKey, notes);
+    // await cacheService.set(cacheKey, notes);
 
     return notes;
   }
 
   async getPinnedNotes(userId) {
-    const cacheKey = cacheService.generateKey('notes', userId, 'pinned');
-    
-    const cachedNotes = await cacheService.get(cacheKey);
-    if (cachedNotes) {
-      return cachedNotes;
-    }
+    // const cacheKey = cacheService.generateKey('notes', userId, 'pinned');
+    // 
+    // const cachedNotes = await cacheService.get(cacheKey);
+    // if (cachedNotes) {
+    //   return cachedNotes;
+    // }
 
     const notes = await Note.find({ userId, isPinned: true, isTrashed: false })
       .populate('labels')
       .sort({ updatedAt: -1 })
       .limit(20);
 
-    await cacheService.set(cacheKey, notes);
+    // await cacheService.set(cacheKey, notes);
 
     return notes;
   }
 
   async getNotesByLabel(userId, labelId) {
-    const cacheKey = cacheService.generateKey('notes', userId, `label:${labelId}`);
-    
-    const cachedNotes = await cacheService.get(cacheKey);
-    if (cachedNotes) {
-      return cachedNotes;
-    }
+    // const cacheKey = cacheService.generateKey('notes', userId, `label:${labelId}`);
+    // 
+    // const cachedNotes = await cacheService.get(cacheKey);
+    // if (cachedNotes) {
+    //   return cachedNotes;
+    // }
 
     const notes = await Note.find({ userId, labels: labelId, isTrashed: false })
       .populate('labels')
       .sort({ isPinned: -1, updatedAt: -1 })
       .limit(20);
 
-    await cacheService.set(cacheKey, notes);
+    // await cacheService.set(cacheKey, notes);
 
     return notes;
   }
@@ -243,8 +243,8 @@ class NoteService {
     note.collaborators.push(collaborator._id);
     await note.save();
 
-    await cacheService.deletePattern(`notes:${userId}*`);
-    await cacheService.deletePattern(`notes:${collaborator._id}*`);
+    // await cacheService.deletePattern(`notes:${userId}*`);
+    // await cacheService.deletePattern(`notes:${collaborator._id}*`);
 
     return { note: await note.populate(['labels', 'collaborators']), collaborator };
   }
@@ -261,26 +261,26 @@ class NoteService {
     );
     await note.save();
 
-    await cacheService.deletePattern(`notes:${userId}*`);
-    await cacheService.deletePattern(`notes:${collaboratorId}*`);
+    // await cacheService.deletePattern(`notes:${userId}*`);
+    // await cacheService.deletePattern(`notes:${collaboratorId}*`);
 
     return await note.populate(['labels', 'collaborators']);
   }
 
   async getSharedNotes(userId) {
-    const cacheKey = cacheService.generateKey('notes', userId, 'shared');
-    
-    const cachedNotes = await cacheService.get(cacheKey);
-    if (cachedNotes) {
-      return cachedNotes;
-    }
+    // const cacheKey = cacheService.generateKey('notes', userId, 'shared');
+    // 
+    // const cachedNotes = await cacheService.get(cacheKey);
+    // if (cachedNotes) {
+    //   return cachedNotes;
+    // }
 
     const notes = await Note.find({ collaborators: userId, isTrashed: false })
       .populate(['labels', 'userId', 'collaborators'])
       .sort({ updatedAt: -1 })
       .limit(20);
 
-    await cacheService.set(cacheKey, notes);
+    // await cacheService.set(cacheKey, notes);
 
     return notes;
   }
