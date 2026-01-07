@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, IconButton, Box, CardActions } from '@mui/material';
+import { Card, CardContent, Typography, IconButton, Box, CardActions, Chip, Checkbox } from '@mui/material';
 import {
   NotificationAddOutlined,
   PersonAddOutlined,
@@ -37,9 +37,29 @@ const NoteCard = ({ note, onAction }) => {
         {note.title && <Typography variant="h6" component="div" sx={{ fontSize: '1rem', fontWeight: 500, mb: 1 }}>
           {note.title}
         </Typography>}
-        <Typography variant="body2" color="text.secondary" sx={{whiteSpace: 'pre-wrap'}}>
-          {note.description}
-        </Typography>
+        {note.checklist && note.checklist.length > 0 ? (
+             <Box>
+                {note.checklist.map((item, index) => (
+                    <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+                         <Checkbox checked={item.isDone} size="small" disabled sx={{ p: 0.5 }} />
+                         <Typography variant="body2" sx={{ textDecoration: item.isDone ? 'line-through' : 'none', color: item.isDone ? 'text.secondary' : 'text.primary' }}>
+                             {item.text}
+                         </Typography>
+                    </Box>
+                ))}
+             </Box>
+        ) : (
+             <Typography variant="body2" color="text.secondary" sx={{whiteSpace: 'pre-wrap'}}>
+                {note.description}
+             </Typography>
+        )}
+        {note.labels && note.labels.length > 0 && (
+            <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {note.labels.map((label) => (
+                    <Chip key={label._id} label={label.name} size="small" sx={{ backgroundColor: 'rgba(0,0,0,0.08)' }} />
+                ))}
+            </Box>
+        )}
       </CardContent>
       <Box sx={{ flexGrow: 1 }} />
       <CardActions sx={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s', justifyContent: 'space-between' }}>

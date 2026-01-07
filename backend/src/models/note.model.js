@@ -30,6 +30,14 @@ const noteSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  checklist: [{
+    text: { type: String, required: true },
+    isDone: { type: Boolean, default: false }
+  }],
+  position: {
+    type: Number,
+    default: 0
+  },
   labels: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Label'

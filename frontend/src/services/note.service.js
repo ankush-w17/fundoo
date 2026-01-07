@@ -53,3 +53,18 @@ export const getArchivedNotes = async () => {
     return response.data;
 };
 
+export const addLabelToNote = async (noteId, labelId) => {
+    const response = await api.post(`/notes/${noteId}/labels`, { labelId });
+    return response.data;
+};
+
+export const removeLabelFromNote = async (noteId, labelId) => {
+    const response = await api.delete(`/notes/${noteId}/labels/${labelId}`);
+    return response.data;
+};
+
+export const getNotesByLabel = async (labelId) => {
+    const response = await api.get(`/notes/label/${labelId}`);
+    return response.data;
+};
+
