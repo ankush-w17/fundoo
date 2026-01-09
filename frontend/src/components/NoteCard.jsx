@@ -12,7 +12,7 @@ import {
   DeleteForeverOutlined
 } from '@mui/icons-material';
 
-const NoteCard = ({ note, onAction }) => {
+const NoteCard = ({ note, onAction, onEdit }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -33,7 +33,7 @@ const NoteCard = ({ note, onAction }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <CardContent sx={{ pb: 0 }}>
+      <CardContent sx={{ pb: 0, cursor: 'default' }} onClick={() => onEdit && onEdit(note)}>
         {note.title && <Typography variant="h6" component="div" sx={{ fontSize: '1rem', fontWeight: 500, mb: 1 }}>
           {note.title}
         </Typography>}

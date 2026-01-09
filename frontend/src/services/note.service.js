@@ -68,3 +68,7 @@ export const getNotesByLabel = async (labelId) => {
     return response.data;
 };
 
+export const searchNotes = async (query) => {
+    const response = await api.get(`/notes/search?q=${query}`);
+    return response.data;
+};

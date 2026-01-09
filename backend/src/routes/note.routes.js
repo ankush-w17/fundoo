@@ -21,6 +21,7 @@ router.put('/:id', noteController.updateNote);
 router.delete('/:id', noteController.deleteNote);
 router.delete('/:id/permanent', noteController.permanentDeleteNote);
 router.post('/:id/restore', noteController.restoreNote);
+router.put('/:id/archive', noteController.archiveNote);
 
 
 router.post('/:id/labels', noteController.addLabel);

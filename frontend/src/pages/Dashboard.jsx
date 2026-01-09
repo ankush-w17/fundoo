@@ -8,7 +8,8 @@ import TakeNote from '../components/TakeNote';
 import NoteCard from '../components/NoteCard';
 import SortableNote from '../components/SortableNote';
 import EditLabelsModal from '../components/EditLabelsModal';
-import { getNotes, archiveNote, trashNote, deleteForever, restoreNote, getTrashNotes, getArchivedNotes, getNotesByLabel } from '../services/note.service';
+import EditNoteModal from '../components/EditNoteModal';
+import { getNotes, archiveNote, trashNote, deleteForever, restoreNote, getTrashNotes, getArchivedNotes, getNotesByLabel, searchNotes } from '../services/note.service';
 import { getLabels } from '../services/label.service';
 
 const Dashboard = () => {
@@ -17,9 +18,15 @@ const Dashboard = () => {
     const [labels, setLabels] = useState([]);
     const [view, setView] = useState('notes'); // notes, archive, trash, reminders, label/:id
     const [isLabelModalOpen, setIsLabelModalOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [editingNote, setEditingNote] = useState(null);
     
     const sensors = useSensors(
-        useSensor(PointerSensor),
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
         useSensor(KeyboardSensor)
     );
 
@@ -36,10 +43,12 @@ const Dashboard = () => {
         }
     };
 
-    const fetchNotes = async () => {
+    const fetchNotes = async (query = searchQuery) => {
         try {
             let data;
-            if (view === 'trash') {
+            if (query) {
+                data = await searchNotes(query);
+            } else if (view === 'trash') {
                 data = await getTrashNotes();
             } else if (view === 'archive') {
                 data = await getArchivedNotes();
@@ -66,6 +75,14 @@ const Dashboard = () => {
     useEffect(() => {
         fetchNotes();
     }, [view]);
+
+    useEffect(() => {
+        if (searchQuery) {
+            fetchNotes(searchQuery);
+        } else {
+            fetchNotes(); // fetch normal notes if search is cleared
+        }
+    }, [searchQuery]);
 
     useEffect(() => {
         fetchLabels();
@@ -96,9 +113,13 @@ const Dashboard = () => {
         }
     };
 
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+    }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#ffffff' }}>
-        <Header handleDrawerToggle={handleDrawerToggle} />
+        <Header handleDrawerToggle={handleDrawerToggle} onSearch={handleSearch} />
         <Box sx={{ display: 'flex', flexGrow: 1, mt: '64px' }}>
             <Sidebar 
                 open={open} 
@@ -108,7 +129,7 @@ const Dashboard = () => {
                 onEditLabels={() => setIsLabelModalOpen(true)}
             />
             <Box component="main" sx={{ flexGrow: 1, p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {view === 'notes' && <TakeNote onNoteCreated={fetchNotes} labels={labels} />}
+                {view === 'notes' && !searchQuery && <TakeNote onNoteCreated={() => fetchNotes()} labels={labels} />}
                 {view === 'trash' && <Box sx={{mb: 2, fontStyle: 'italic', color: 'gray'}}>Notes in Trash are deleted after 7 days.</Box>}
                 
                 <DndContext 
@@ -135,6 +156,7 @@ const Dashboard = () => {
                                     id={note._id || note.id} 
                                     note={note} 
                                     onAction={handleNoteAction} 
+                                    onEdit={setEditingNote}
                                 />
                             ))}
                         </Box>
@@ -147,6 +169,12 @@ const Dashboard = () => {
             onClose={() => setIsLabelModalOpen(false)} 
             labels={labels}
             onUpdate={fetchLabels}
+        />
+        <EditNoteModal
+            open={!!editingNote}
+            onClose={() => setEditingNote(null)}
+            note={editingNote}
+            onUpdate={() => fetchNotes()}
         />
     </Box>
   );

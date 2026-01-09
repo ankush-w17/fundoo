@@ -44,7 +44,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Header = ({ handleDrawerToggle }) => {
+const Header = ({ handleDrawerToggle, onSearch }) => {
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: '#ffffff', color: '#5f6368', boxShadow: 'inset 0 -1px 0 0 #dadce0' }} elevation={0}>
       <Toolbar>
@@ -68,6 +68,7 @@ const Header = ({ handleDrawerToggle }) => {
           <StyledInputBase
             placeholder="Search"
             inputProps={{ 'aria-label': 'search' }}
+            onChange={(e) => onSearch && onSearch(e.target.value)}
           />
         </Search>
          <Box sx={{ flexGrow: 1 }} />

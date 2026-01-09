@@ -130,6 +130,22 @@ class NoteController {
     }
   }
 
+  async archiveNote(req, res) {
+    try {
+      const note = await noteService.updateNote(req.params.id, req.user._id, { isArchived: true, isPinned: false });
+      res.status(200).json({
+        success: true,
+        message: 'Note archived successfully',
+        data: note
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
   async addLabel(req, res) {
     try {
       const { labelId } = req.body;
